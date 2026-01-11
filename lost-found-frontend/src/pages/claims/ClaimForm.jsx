@@ -1,8 +1,8 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { db } from "../../firebase/firebaseConfig";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
- import { sendNotification } from "../../utils/notify";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { sendNotification } from "../../utils/notify";
 
 export default function ClaimForm({ foundItem, onClose }) {
   const { user } = useContext(AuthContext);
@@ -11,88 +11,74 @@ export default function ClaimForm({ foundItem, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!message.trim()) {
+      alert("Please enter a message explaining why this belongs to you.");
+      return;
+    }
+
     setLoading(true);
 
     try {
+      // ✅ 1. SAVE CLAIM TO FIRESTORE (With Correct Logic)
       await addDoc(collection(db, "claims"), {
-        foundItemId: foundItem.id,
-        claimedBy: user.uid,
-        finderId: foundItem.userId,
-        message,
-        status: "pending",
-        createdAt: Timestamp.now(),
+        userId: user.uid,              // Claimer (Main)
+        finderId: foundItem.userId,    // 🔥 CRITICAL FIX: Finder ki ID (Jisko request jayegi)
+        
+        itemTitle: foundItem.title || "Unknown Item",
+        itemId: foundItem.id,          // Found Item ka reference ID
+        
+        message: message,
+        status: "pending",             // Initial Status
+        createdAt: serverTimestamp(),
       });
 
-      await sendNotification({
-  userId: foundItem.userId, // finder
-  title: "New Claim Received",
-  message: "Someone has claimed an item you found.",
-});
+      // ✅ 2. SEND NOTIFICATION (Optional Helper)
+      if (foundItem.userId) {
+        await sendNotification({
+          userId: foundItem.userId,
+          title: "New Claim Request",
+          message: `Someone claimed: ${foundItem.title || "an item"}. Check your dashboard.`,
+        });
+      }
 
-
-      alert("Claim request sent ✅");
-      onClose();
-    } catch (err) {
-      console.error(err);
-      alert("Claim failed ❌");
+      alert("Claim request sent successfully! ✅");
+      onClose(); // Modal band karo
+    } catch (error) {
+      console.error("CLAIM ERROR:", error);
+      alert("Failed to send claim. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
-    <div
-      style={{
-        background: "white",
-        padding: 20,
-        width: 400,
-        borderRadius: 8,
-      }}
-    >
-      <h2 style={{ fontWeight: "bold", marginBottom: 10 }}>
-        Claim This Item
-      </h2>
-
-      <p style={{ fontSize: 14, marginBottom: 10 }}>
-        Item: <b>{foundItem.title}</b>
+    // Wrapper div se inline styles hata diye hain taaki CSS handle kare
+    <div className="claim-form-content">
+      
+      <h2>Claim This Item</h2>
+      
+      <p>
+        Item: <strong>{foundItem.title}</strong>
       </p>
 
       <form onSubmit={handleSubmit}>
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Explain why this item belongs to you"
+          placeholder="Explain detailed proof of ownership (e.g., color, unique marks, contents)..."
           required
-          style={{
-            width: "100%",
-            height: 100,
-            border: "1px solid #ccc",
-            padding: 8,
-          }}
+          rows="4"
         />
 
-        <div style={{ marginTop: 15, textAlign: "right" }}>
-          <button
-            type="button"
-            onClick={onClose}
-            style={{
-              marginRight: 10,
-              padding: "6px 12px",
-            }}
-          >
-            Cancel
+        {/* Buttons: CSS 'order' property se ye upar-neeche set honge */}
+        <div className="form-actions">
+          <button type="submit" disabled={loading}>
+            {loading ? "Sending Request..." : "Submit Claim"}
           </button>
-
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              padding: "6px 12px",
-              background: "green",
-              color: "white",
-            }}
-          >
-            {loading ? "Sending..." : "Submit Claim"}
+          
+          <button type="button" onClick={onClose} className="cancel-btn">
+            Cancel
           </button>
         </div>
       </form>

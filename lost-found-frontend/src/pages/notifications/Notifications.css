@@ -1,0 +1,183 @@
+/* Container */
+.notifications-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Header */
+.notif-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 15px;
+}
+
+.notifications-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f3f4f6;
+  margin: 0;
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.mark-all-btn {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #475569;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mark-all-btn:hover {
+  background: #334155;
+  color: white;
+  border-color: #94a3b8;
+}
+
+/* Loading & Empty States */
+.notif-loading, .empty-state {
+  text-align: center;
+  color: #94a3b8;
+  padding: 50px;
+  font-size: 1.1rem;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}
+
+/* CARD STYLING (Glassmorphism) */
+.notification-card {
+  background: rgba(30, 41, 59, 0.6); /* Semi-transparent Slate */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.notification-card:hover {
+  transform: translateY(-3px) scale(1.01);
+  background: rgba(30, 41, 59, 0.8);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* UNREAD STATE (Glowing) */
+.notification-card.unread {
+  border-left: 4px solid #3b82f6;
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, rgba(30, 41, 59, 0.6) 100%);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.notification-card.read {
+  opacity: 0.7;
+  filter: grayscale(0.4);
+}
+
+/* Content */
+.notif-icon {
+  font-size: 1.5rem;
+  padding-top: 2px;
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-content h3 {
+  margin: 0 0 5px;
+  font-size: 1.1rem;
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+.notification-content p {
+  margin: 0 0 8px;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.time-ago {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-style: italic;
+}
+
+/* Actions & Dot */
+.notif-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.glow-dot {
+  width: 10px;
+  height: 10px;
+  background: #3b82f6;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #3b82f6;
+  animation: pulse 2s infinite;
+}
+
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: color 0.2s;
+}
+
+.delete-btn:hover {
+  color: #ef4444; /* Red on hover */
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+  .notification-card {
+    flex-direction: column; /* Stack on mobile if text is long */
+    align-items: flex-start;
+  }
+  .notif-actions {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+}

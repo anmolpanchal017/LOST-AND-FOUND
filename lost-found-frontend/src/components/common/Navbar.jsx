@@ -1,77 +1,114 @@
-// import { useContext } from "react";
-// import { AuthContext } from "../../context/AuthContext";
-// import { auth } from "../../firebase/firebaseConfig";
-// import { signOut } from "firebase/auth";
-// import { useNavigate } from "react-router-dom";
-
-// export default function Navbar() {
-//   const { user } = useContext(AuthContext);
-//   const navigate = useNavigate();
-
-//   const handleLogout = async () => {
-//     await signOut(auth);
-//     navigate("/");
-//   };
-
-//   return (
-//     <nav className="flex justify-between items-center px-6 py-3 bg-blue-600 text-white">
-//       <h1 className="font-bold text-lg">Lost & Found</h1>
-
-//       {user && (
-//         <div className="flex items-center gap-4">
-//           <span>{user.displayName}</span>
-//           <button
-//             onClick={handleLogout}
-//             className="bg-red-500 px-3 py-1 rounded"
-//           >
-//             Logout
-//           </button>
-//         </div>
-//       )}
-//     </nav>
-//   );
-// }
+import "./Navbar.css";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase/firebaseConfig";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react"; // For mobile menu
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Mobile menu state
 
   const logout = async () => {
-    await signOut(auth);
-    navigate("/");
+    try {
+      await signOut(auth);
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
+  const handleSearch = (e) => {
+    if (e.key === "Enter") {
+      // Placeholder: Implement search logic
+      console.log("Search:", e.target.value);
+    }
+  };
+
+  const links = [
+    { label: "Dashboard", path: "/dashboard", icon: "🏠" },
+    { label: "My Claims", path: "/my-claims", icon: "📋" },
+    { label: "Notifications", path: "/notifications", icon: "🔔" },
+  ];
+
   return (
-    <nav className="bg-blue-600 text-white px-6 py-3 flex justify-between items-center">
-      <h1
-        className="font-bold text-lg cursor-pointer"
-        onClick={() => navigate("/dashboard")}
-      >
-        Lost & Found
-      </h1>
+    <header className="header">
+      <div className="navbar-wrapper">
+        <nav className="navbar">
+          {/* LOGO SECTION */}
+          <div className="logo-section" onClick={() => navigate("/dashboard")}>
+            <div className="logo-icon">L</div> {/* Icon placeholder */}
+            <div className="logo-text">
+              LOST <span>&</span> FOUND
+            </div>
+          </div>
 
-      <div className="flex gap-4 items-center">
-        <button onClick={() => navigate("/dashboard")}>
-          Dashboard
-        </button>
+          {/* NAV LINKS (Desktop) */}
+          <div className="nav-links">
+            {links.map((item) => (
+              <button
+                key={item.path}
+                className={`nav-btn ${
+                  location.pathname === item.path ? "active" : ""
+                }`}
+                onClick={() => navigate(item.path)}
+                aria-current={location.pathname === item.path ? "page" : undefined}
+              >
+                <span>{item.icon}</span> {item.label}
+              </button>
+            ))}
+          </div>
 
-        <button onClick={() => navigate("/my-claims")}>
-          My Claims
-        </button>
+          {/* RIGHT SECTION */}
+          <div className="right-section">
+            <div className="search-container">
+              <input
+                type="text"
+                className="search"
+                placeholder="Search"
+                onKeyDown={handleSearch}
+                aria-label="Search"
+              />
+            </div>
+            <button className="logout" onClick={logout} aria-label="Logout">
+              Logout
+            </button>
+          </div>
 
-        <button onClick={() => navigate("/notifications")}>
-          Notifications
-        </button>
+          {/* HAMBURGER MENU (Mobile) */}
+          <button
+            className="hamburger"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
+            aria-expanded={isMenuOpen}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
 
-        <button
-          onClick={logout}
-          className="bg-red-500 px-3 py-1 rounded"
-        >
-          Logout
-        </button>
+          {/* MOBILE MENU DROPDOWN */}
+          {isMenuOpen && (
+            <div className="mobile-menu">
+              {links.map((item) => (
+                <button
+                  key={item.path}
+                  className={`nav-btn ${
+                    location.pathname === item.path ? "active" : ""
+                  }`}
+                  onClick={() => {
+                    navigate(item.path);
+                    setIsMenuOpen(false);
+                  }}
+                  aria-current={location.pathname === item.path ? "page" : undefined}
+                >
+                  <span>{item.icon}</span> {item.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </nav>
       </div>
-    </nav>
+    </header>
   );
 }

@@ -1,16 +1,55 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { db } from "../../firebase/firebaseConfig";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 
-/* ================================
-   CLOUDINARY IMAGE UPLOAD FUNCTION
-   ================================ */
-const uploadImageToCloudinary = async (file) => {
+export default function FoundForm() {
+  const { user } = useContext(AuthContext);
+
+  const [form, setForm] = useState({
+    title: "",
+    category: "",
+    description: "",
+    date: "",
+    locationText: "",
+  });
+
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // -----------------------------
+  // INPUT CHANGE
+  // -----------------------------
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  // -----------------------------
+  // IMAGE SELECT
+  // -----------------------------
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setImage(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
+  // -----------------------------
+  // CLOUDINARY UPLOAD
+  // -----------------------------
+  const uploadImage = async () => {
+  if (!image) return null;
+
   const data = new FormData();
-  data.append("file", file);
+  data.append("file", image);
   data.append("upload_preset", "lost_found_unsigned");
-  data.append("cloud_name", "dxzrvvsvq"); // 🔴 replace
+  data.append("cloud_name", "dxzrvvsvq");
 
   const res = await fetch(
     "https://api.cloudinary.com/v1_1/dxzrvvsvq/image/upload",
@@ -20,150 +59,130 @@ const uploadImageToCloudinary = async (file) => {
     }
   );
 
+  if (!res.ok) {
+    throw new Error("Cloudinary upload failed");
+  }
+
   const result = await res.json();
   return result.secure_url;
 };
 
-export default function FoundForm() {
-  const { user } = useContext(AuthContext);
-
-  const [form, setForm] = useState({
-    title: "",
-    category: "",
-    description: "",
-    locationText: "",
-    date: "",
-  });
-
-  const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setImage(file);
-    setPreview(URL.createObjectURL(file));
-  };
-
+  // -----------------------------
+  // SUBMIT FORM
+  // -----------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      let imageUrl = "";
+      let imageUrl = null;
 
       if (image) {
-        imageUrl = await uploadImageToCloudinary(image);
+        imageUrl = await uploadImage();
       }
 
-      await addDoc(collection(db, "foundItems"), {
+      const payload = {
         ...form,
-        imageUrl,
         userId: user.uid,
-        createdAt: Timestamp.now(),
-      });
+        createdAt: serverTimestamp(),
+      };
 
-      alert("Found Item saved successfully ✅");
+      // ❗ undefined kabhi Firestore me nahi jayega
+      if (imageUrl) {
+        payload.imageUrl = imageUrl;
+      }
+
+      await addDoc(collection(db, "foundItems"), payload);
+
+      alert("Found item saved successfully ✅");
 
       setForm({
         title: "",
         category: "",
         description: "",
-        locationText: "",
         date: "",
+        locationText: "",
       });
       setImage(null);
       setPreview(null);
-    } catch (error) {
-      console.error(error);
-      alert("Something went wrong ❌");
+    } catch (err) {
+      console.error("SAVE ERROR:", err);
+      alert("Failed to save found item ❌");
     }
 
     setLoading(false);
   };
 
+  // -----------------------------
+  // UI
+  // -----------------------------
   return (
-    <div className="bg-white p-6 rounded shadow">
-      <h2 className="text-xl font-bold mb-4">Report Found Item</h2>
+    <form onSubmit={handleSubmit}>
+      <input
+        name="title"
+        placeholder="Item Title"
+        value={form.title}
+        onChange={handleChange}
+        required
+      />
 
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <input
-          name="title"
-          placeholder="Item Title"
-          className="w-full border p-2"
-          value={form.title}
-          onChange={handleChange}
-          required
+      <select
+        name="category"
+        value={form.category}
+        onChange={handleChange}
+        required
+      >
+        <option value="">Select Category</option>
+        <option>Wallet</option>
+        <option>Phone</option>
+        <option>ID Card</option>
+        <option>Bag</option>
+      </select>
+
+      <textarea
+        name="description"
+        placeholder="Description"
+        value={form.description}
+        onChange={handleChange}
+        required
+      />
+
+      <input
+        type="date"
+        name="date"
+        value={form.date}
+        onChange={handleChange}
+        required
+      />
+
+      <input
+        name="locationText"
+        placeholder="Last seen location"
+        value={form.locationText}
+        onChange={handleChange}
+      />
+
+      {/* IMAGE INPUT */}
+      <input type="file" accept="image/*" onChange={handleImageChange} />
+
+      {/* IMAGE PREVIEW */}
+      {preview && (
+        <img
+          src={preview}
+          alt="preview"
+          style={{
+            width: "100%",
+            maxHeight: 200,
+            objectFit: "cover",
+            borderRadius: 10,
+            marginTop: 10,
+          }}
         />
+      )}
 
-        <select
-          name="category"
-          className="w-full border p-2"
-          value={form.category}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Select Category</option>
-          <option>Wallet</option>
-          <option>Phone</option>
-          <option>ID Card</option>
-          <option>Bag</option>
-        </select>
-
-        <textarea
-          name="description"
-          placeholder="Description"
-          className="w-full border p-2"
-          value={form.description}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          name="locationText"
-          placeholder="Found at (e.g. Library, Canteen)"
-          className="w-full border p-2"
-          value={form.locationText}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="date"
-          name="date"
-          className="w-full border p-2"
-          value={form.date}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          required
-        />
-
-        {preview && (
-          <img
-            src={preview}
-            alt="preview"
-            className="h-28 object-cover rounded"
-          />
-        )}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-green-600 text-white py-2 rounded"
-        >
-          {loading ? "Saving..." : "Submit Found Item"}
-        </button>
-      </form>
-    </div>
+      <button type="submit" disabled={loading}>
+        {loading ? "Saving..." : "Submit Found Item"}
+      </button>
+    </form>
   );
 }

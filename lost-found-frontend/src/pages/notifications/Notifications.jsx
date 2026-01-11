@@ -1,63 +1,125 @@
 import { useEffect, useState, useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
-import { db } from "../../firebase/firebaseConfig";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  orderBy,
+import { 
+  collection, query, where, orderBy, onSnapshot, 
+  updateDoc, doc, deleteDoc, writeBatch 
 } from "firebase/firestore";
-import Navbar from "../../components/common/Navbar";
-
+import { db } from "../../firebase/firebaseConfig";
+import { AuthContext } from "../../context/AuthContext";
+import "./Notifications.css";
 
 export default function Notifications() {
   const { user } = useContext(AuthContext);
   const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      const q = query(
-        collection(db, "notifications"),
-        where("userId", "==", user.uid),
-        orderBy("createdAt", "desc")
-      );
+    if (!user) return;
 
-      const snap = await getDocs(q);
-      setNotifications(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    };
+    // Query: Get notifications for current user, ordered by time
+    const q = query(
+      collection(db, "notifications"),
+      where("userId", "==", user.uid),
+      orderBy("createdAt", "desc")
+    );
 
-    fetchNotifications();
-  }, [user.uid]);
+    const unsub = onSnapshot(q, (snap) => {
+      const data = snap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setNotifications(data);
+      setLoading(false);
+    });
+
+    return () => unsub();
+  }, [user]);
+
+  // ✅ Mark Single as Read
+  const markAsRead = async (id) => {
+    try {
+      await updateDoc(doc(db, "notifications", id), { isRead: true });
+    } catch (err) {
+      console.error("Error updating notification:", err);
+    }
+  };
+
+  // ✅ Delete Notification
+  const deleteNotification = async (e, id) => {
+    e.stopPropagation(); // Card click hone se rokne ke liye
+    if (window.confirm("Delete this notification?")) {
+      await deleteDoc(doc(db, "notifications", id));
+    }
+  };
+
+  // ✅ Mark ALL as Read (Batch Write)
+  const markAllRead = async () => {
+    const batch = writeBatch(db);
+    notifications.forEach((n) => {
+      if (!n.isRead) {
+        const ref = doc(db, "notifications", n.id);
+        batch.update(ref, { isRead: true });
+      }
+    });
+    await batch.commit();
+  };
+
+  if (loading) return <div className="notif-loading">Loading updates...</div>;
 
   return (
-  <>
-    <Navbar />
+    <div className="notifications-container">
+      
+      {/* Header Section */}
+      <div className="notif-header">
+        <h1 className="notifications-title">🔔 Notifications</h1>
+        {notifications.length > 0 && (
+          <button className="mark-all-btn" onClick={markAllRead}>
+            Mark all read
+          </button>
+        )}
+      </div>
 
-    <div className="p-6 space-y-6">
-      <h2 className="text-2xl font-bold">
-        Notifications
-      </h2>
-
+      {/* Empty State */}
       {notifications.length === 0 && (
-        <p className="text-gray-500">
-          No notifications yet.
-        </p>
+        <div className="empty-state">
+          <span className="empty-icon">🔕</span>
+          <p>No new notifications</p>
+        </div>
       )}
 
-      {notifications.map((n) => (
-        <div
-          key={n.id}
-          className={`p-4 rounded shadow ${
-            n.read ? "bg-gray-100" : "bg-white"
-          }`}
-        >
-          <p className="font-semibold">{n.title}</p>
-          <p className="text-sm">{n.message}</p>
-        </div>
-      ))}
-    </div>
-  </>
-);
+      {/* List */}
+      <div className="notif-list">
+        {notifications.map((n) => (
+          <div
+            key={n.id}
+            className={`notification-card ${n.isRead ? "read" : "unread"}`}
+            onClick={() => !n.isRead && markAsRead(n.id)}
+          >
+            <div className="notif-icon">
+              {n.isRead ? "📩" : "qh"} {/* Icon change based on status */}
+            </div>
 
+            <div className="notification-content">
+              <h3>{n.title}</h3>
+              <p>{n.message}</p>
+              <span className="time-ago">
+                {n.createdAt?.toDate ? n.createdAt.toDate().toLocaleString() : "Just now"}
+              </span>
+            </div>
+
+            {/* Actions (Dot or Delete) */}
+            <div className="notif-actions">
+              {!n.isRead && <span className="glow-dot" title="Unread"></span>}
+              <button 
+                className="delete-btn" 
+                onClick={(e) => deleteNotification(e, n.id)}
+                title="Delete"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }

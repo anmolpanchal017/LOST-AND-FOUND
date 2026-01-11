@@ -5,6 +5,7 @@ import LostForm from "../lost/LostForm";
 import FoundForm from "../found/FoundForm";
 import FoundList from "../found/FoundList";
 import FinderClaims from "../claims/FinderClaims";
+import "./Dashboard.css"; // Import the CSS file
 
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
@@ -12,23 +13,50 @@ export default function Dashboard() {
   return (
     <>
       <Navbar />
+           
+      <div className="dashboard-container">
+        {/* HERO HEADER */}
+        <header className="dashboard-header">
+          <h1 className="welcome-title">
+            Welcome, {user.displayName}! 👋
+          </h1>
+          <p className="welcome-subtitle">
+            Manage your lost and found items effortlessly.
+          </p>
+        </header>
 
-      <div className="p-6 space-y-10">
-        <h2 className="text-2xl font-bold">
-          Welcome, {user.displayName} 👋
-        </h2>
+        {/* FORMS SECTION */}
+        <section className="forms-section">
+          <h2 className="section-title">📝 Quick Actions</h2>
+          <div className="forms-grid">
+            <div className="form-card">
+              <div className="card-icon">🔍</div>
+              <h3>Report Lost Item</h3>
+              <LostForm />
+            </div>
+            <div className="form-card">
+              <div className="card-icon">✅</div>
+              <h3>Report Found Item</h3>
+              <FoundForm />
+            </div>
+          </div>
+        </section>
 
-        {/* FORMS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <LostForm />
-          <FoundForm />
-        </div>
+        {/* FOUND ITEMS SECTION */}
+        <section className="items-section">
+          <h2 className="section-title">📦 Found Items</h2>
+          <div className="items-card">
+            <FoundList />
+          </div>
+        </section>
 
-        {/* FOUND ITEMS */}
-        <FoundList />
-
-        {/* FINDER CLAIMS */}
-        <FinderClaims />
+        {/* CLAIMS SECTION */}
+        <section className="claims-section">
+          <h2 className="section-title">📋 Your Claims</h2>
+          <div className="claims-card">
+            <FinderClaims />
+          </div>
+        </section>
       </div>
     </>
   );

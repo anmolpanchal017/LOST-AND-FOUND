@@ -1,0 +1,125 @@
+/* Container */
+.finder-claims-container {
+  width: 100%;
+}
+
+.loading-text, .no-claims {
+  color: #94a3b8;
+  text-align: center;
+  font-style: italic;
+  padding: 20px;
+}
+
+/* List Grid */
+.claims-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* THE CARD */
+.request-card {
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.request-card:hover {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: #38bdf8;
+  transform: translateX(5px);
+}
+
+/* Header */
+.req-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.item-name {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.req-date {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+/* Body */
+.req-body p {
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+
+.req-status {
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+/* STATUS PILLS */
+.status-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-left: 8px;
+}
+
+.status-pill.pending { background: rgba(253, 224, 71, 0.2); color: #facc15; }
+.status-pill.approved { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+.status-pill.rejected { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+
+/* ACTION BUTTONS */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.btn-approve, .btn-reject {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.btn-approve {
+  background: linear-gradient(135deg, #10b981, #059669); /* Green */
+  color: white;
+}
+
+.btn-reject {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #ef4444;
+  color: #ef4444; /* Red Outline */
+}
+
+.btn-approve:hover, .btn-reject:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+/* Messages after action */
+.decision-msg {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 8px;
+  border-radius: 6px;
+}
+.decision-msg.success { color: #4ade80; background: rgba(74, 222, 128, 0.1); }
+.decision-msg.error { color: #f87171; background: rgba(248, 113, 113, 0.1); }

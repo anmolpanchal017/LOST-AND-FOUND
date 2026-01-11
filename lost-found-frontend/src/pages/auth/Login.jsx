@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./Login.css";
 import { auth } from "../../firebase/firebaseConfig";
 import {
   signInWithEmailAndPassword,
@@ -12,16 +13,25 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
+
+    if (!email || !password) {
+      setError("Please fill in all fields.");
+      setLoading(false);
+      return;
+    }
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate("/dashboard"); // ✅ AUTO REDIRECT
+      navigate("/dashboard");
     } catch (error) {
-      alert(error.message);
+      setError(error.message);
     }
 
     setLoading(false);
@@ -29,58 +39,99 @@ export default function Login() {
 
   const handleGoogleLogin = async () => {
     setLoading(true);
+    setError("");
+
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      navigate("/dashboard"); // ✅ AUTO REDIRECT
+      navigate("/dashboard");
     } catch (error) {
-      alert(error.message);
+      setError(error.message);
     }
+
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <form
-        onSubmit={handleEmailLogin}
-        className="bg-white p-6 rounded shadow w-96 space-y-4"
-      >
-        <h2 className="text-xl font-bold text-center">Login</h2>
+    <div className="login-page">
+      <div className="login-card">
+        <h1 className="login-title">Welcome</h1>
+        <p className="login-subtitle">Sign in to your account</p>
 
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full border p-2"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full border p-2"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-2"
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
+        {error && <p className="error-message" role="alert">{error}</p>}
 
         <button
           type="button"
           onClick={handleGoogleLogin}
-          className="w-full bg-red-500 text-white py-2"
+          disabled={loading}
+          className="google-btn"
+          aria-label="Login with Google"
         >
-          Login with Google
+          <span className="google-icon">G</span> Continue with Google
         </button>
-      </form>
+
+        <div className="divider">
+          <span>or</span>
+        </div>
+
+        <form onSubmit={handleEmailLogin} className="login-form">
+          <div className="input-group">
+            <label htmlFor="email" className="input-label">Email</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              className="input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              aria-label="Email"
+              disabled={loading}
+            />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="password" className="input-label">Password</label>
+            <div className="password-container">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                className="input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                aria-label="Password"
+                disabled={loading}
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="login-btn"
+            aria-label="Login"
+          >
+            {loading ? <span className="spinner"></span> : "Login"}
+          </button>
+        </form>
+
+        <p className="footer-text">
+          Forgot your password? <a href="#" className="link">Reset here</a>
+        </p>
+        <p className="footer-text">
+          Don't have an account? <a href="#" className="link">Sign up</a>
+        </p>
+      </div>
     </div>
   );
 }
