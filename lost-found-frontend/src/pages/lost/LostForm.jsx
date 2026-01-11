@@ -1,47 +1,119 @@
-import "./LostForm.css";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import { db } from "../../firebase/firebaseConfig";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export default function LostForm() {
-  const [form, setForm] = useState({
+  const { user } = useContext(AuthContext);
+
+  const initialState = {
     title: "",
     category: "",
     description: "",
     date: "",
     locationText: "",
-  });
+    phone: "",
+  };
 
+  const [form, setForm] = useState(initialState);
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
 
+  // -----------------------------
+  // INPUT CHANGE
+  // -----------------------------
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // -----------------------------
+  // IMAGE SELECT
+  // -----------------------------
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    if (!file) return;
+
     setImage(file);
     setPreview(URL.createObjectURL(file));
   };
 
-  const handleSubmit = (e) => {
+  // -----------------------------
+  // CLOUDINARY UPLOAD
+  // -----------------------------
+  const uploadImage = async () => {
+    if (!image) return null;
+
+    const data = new FormData();
+    data.append("file", image);
+    data.append("upload_preset", "lost_found_unsigned");
+    data.append("cloud_name", "dxzrvvsvq");
+
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dxzrvvsvq/image/upload",
+      {
+        method: "POST",
+        body: data,
+      }
+    );
+
+    if (!res.ok) throw new Error("Image upload failed");
+
+    const result = await res.json();
+    return result.secure_url;
+  };
+
+  // -----------------------------
+  // SUBMIT
+  // -----------------------------
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Lost Item:", form, image);
-    alert("Lost Item Submitted (UI test)");
+    if (!user) return alert("User not logged in");
+
+    setLoading(true);
+
+    try {
+      let imageUrl = null;
+      if (image) imageUrl = await uploadImage();
+
+      const payload = {
+        ...form,
+        imageUrl: imageUrl || null,
+        userId: user.uid,
+        userName: user.displayName || "Anonymous",
+        createdAt: serverTimestamp(),
+      };
+
+      await addDoc(collection(db, "lostItems"), payload);
+
+      alert("Lost item submitted successfully ✅");
+
+      // RESET FORM
+      setForm(initialState);
+      setImage(null);
+      setPreview(null);
+      document.getElementById("lost-image-input").value = "";
+    } catch (err) {
+      console.error("SAVE ERROR:", err);
+      alert("Failed to submit lost item ❌");
+    }
+
+    setLoading(false);
   };
 
   return (
-    <form className="lost-form" onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
       <input
         name="title"
         placeholder="Item Title"
-        className="form-input"
+        value={form.title}
         onChange={handleChange}
         required
       />
 
       <select
         name="category"
-        className="form-input"
+        value={form.category}
         onChange={handleChange}
         required
       >
@@ -50,12 +122,13 @@ export default function LostForm() {
         <option>Phone</option>
         <option>ID Card</option>
         <option>Bag</option>
+        <option>Other</option>
       </select>
 
       <textarea
         name="description"
         placeholder="Description"
-        className="form-textarea"
+        value={form.description}
         onChange={handleChange}
         required
       />
@@ -63,7 +136,7 @@ export default function LostForm() {
       <input
         type="date"
         name="date"
-        className="form-input"
+        value={form.date}
         onChange={handleChange}
         required
       />
@@ -71,20 +144,43 @@ export default function LostForm() {
       <input
         name="locationText"
         placeholder="Last seen location"
-        className="form-input"
+        value={form.locationText}
         onChange={handleChange}
         required
       />
 
-      <div className="image-upload">
-        <input type="file" accept="image/*" onChange={handleImageChange} />
-        {preview && (
-          <img src={preview} alt="preview" className="image-preview" />
-        )}
-      </div>
+      <input
+        name="phone"
+        placeholder="Contact Phone Number"
+        value={form.phone}
+        onChange={handleChange}
+        required
+      />
 
-      <button type="submit" className="form-btn">
-        Submit Lost Item
+      {/* IMAGE */}
+      <input
+        id="lost-image-input"
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+      />
+
+      {preview && (
+        <img
+          src={preview}
+          alt="preview"
+          style={{
+            width: "100%",
+            maxHeight: 200,
+            objectFit: "cover",
+            marginTop: 10,
+            borderRadius: 8,
+          }}
+        />
+      )}
+
+      <button type="submit" disabled={loading}>
+        {loading ? "Submitting..." : "Submit Lost Item"}
       </button>
     </form>
   );

@@ -42,13 +42,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* FOUND ITEMS SECTION */}
-        <section className="items-section">
-          <h2 className="section-title">📦 Found Items</h2>
-          <div className="items-card">
-            <FoundList />
-          </div>
-        </section>
+       
 
         {/* CLAIMS SECTION */}
         <section className="claims-section">

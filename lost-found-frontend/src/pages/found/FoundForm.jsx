@@ -1,23 +1,21 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { db } from "../../firebase/firebaseConfig";
-import {
-  collection,
-  addDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export default function FoundForm() {
   const { user } = useContext(AuthContext);
 
-  const [form, setForm] = useState({
+  const initialState = {
     title: "",
     category: "",
     description: "",
     date: "",
     locationText: "",
-  });
+    phone: "",
+  };
 
+  const [form, setForm] = useState(initialState);
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -44,78 +42,73 @@ export default function FoundForm() {
   // CLOUDINARY UPLOAD
   // -----------------------------
   const uploadImage = async () => {
-  if (!image) return null;
+    if (!image) return null;
 
-  const data = new FormData();
-  data.append("file", image);
-  data.append("upload_preset", "lost_found_unsigned");
-  data.append("cloud_name", "dxzrvvsvq");
+    const data = new FormData();
+    data.append("file", image);
+    data.append("upload_preset", "lost_found_unsigned");
+    data.append("cloud_name", "dxzrvvsvq");
 
-  const res = await fetch(
-    "https://api.cloudinary.com/v1_1/dxzrvvsvq/image/upload",
-    {
-      method: "POST",
-      body: data,
-    }
-  );
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dxzrvvsvq/image/upload",
+      {
+        method: "POST",
+        body: data,
+      }
+    );
 
-  if (!res.ok) {
-    throw new Error("Cloudinary upload failed");
-  }
+    if (!res.ok) throw new Error("Image upload failed");
 
-  const result = await res.json();
-  return result.secure_url;
-};
+    const result = await res.json();
+    return result.secure_url;
+  };
 
   // -----------------------------
-  // SUBMIT FORM
+  // SUBMIT
   // -----------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!user) {
+      alert("User not logged in");
+      return;
+    }
+
+    // 📞 PHONE VALIDATION
+    if (!/^[0-9]{10}$/.test(form.phone)) {
+      alert("Enter a valid 10-digit mobile number");
+      return;
+    }
+
     setLoading(true);
 
     try {
       let imageUrl = null;
+      if (image) imageUrl = await uploadImage();
 
-      if (image) {
-        imageUrl = await uploadImage();
-      }
-
-      const payload = {
-        ...form,
+      await addDoc(collection(db, "foundItems"), {
+        ...form,                 // ✅ phone included
+        imageUrl: imageUrl || null,
         userId: user.uid,
+        userName: user.displayName || "Anonymous",
         createdAt: serverTimestamp(),
-      };
-
-      // ❗ undefined kabhi Firestore me nahi jayega
-      if (imageUrl) {
-        payload.imageUrl = imageUrl;
-      }
-
-      await addDoc(collection(db, "foundItems"), payload);
-
-      alert("Found item saved successfully ✅");
-
-      setForm({
-        title: "",
-        category: "",
-        description: "",
-        date: "",
-        locationText: "",
       });
+
+      alert("Found item submitted successfully ✅");
+
+      // RESET FORM
+      setForm(initialState);
       setImage(null);
       setPreview(null);
+      document.getElementById("found-image-input").value = "";
     } catch (err) {
       console.error("SAVE ERROR:", err);
-      alert("Failed to save found item ❌");
+      alert("Failed to submit found item ❌");
     }
 
     setLoading(false);
   };
 
-  // -----------------------------
-  // UI
-  // -----------------------------
   return (
     <form onSubmit={handleSubmit}>
       <input
@@ -137,6 +130,7 @@ export default function FoundForm() {
         <option>Phone</option>
         <option>ID Card</option>
         <option>Bag</option>
+        <option>Other</option>
       </select>
 
       <textarea
@@ -157,15 +151,29 @@ export default function FoundForm() {
 
       <input
         name="locationText"
-        placeholder="Last seen location"
+        placeholder="Found location"
         value={form.locationText}
         onChange={handleChange}
+        required
       />
 
-      {/* IMAGE INPUT */}
-      <input type="file" accept="image/*" onChange={handleImageChange} />
+      {/* 📞 PHONE */}
+      <input
+        name="phone"
+        placeholder="Contact Mobile Number"
+        value={form.phone}
+        onChange={handleChange}
+        required
+      />
 
-      {/* IMAGE PREVIEW */}
+      {/* 📷 IMAGE */}
+      <input
+        id="found-image-input"
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+      />
+
       {preview && (
         <img
           src={preview}
@@ -174,14 +182,14 @@ export default function FoundForm() {
             width: "100%",
             maxHeight: 200,
             objectFit: "cover",
-            borderRadius: 10,
             marginTop: 10,
+            borderRadius: 8,
           }}
         />
       )}
 
       <button type="submit" disabled={loading}>
-        {loading ? "Saving..." : "Submit Found Item"}
+        {loading ? "Submitting..." : "Submit Found Item"}
       </button>
     </form>
   );

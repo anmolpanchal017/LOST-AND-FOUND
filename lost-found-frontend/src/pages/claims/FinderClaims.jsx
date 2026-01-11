@@ -1,6 +1,13 @@
 import React, { useEffect, useState, useContext } from "react";
 import { db } from "../../firebase/firebaseConfig";
-import { collection, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 import { AuthContext } from "../../context/AuthContext";
 import "./FinderClaims.css";
 
@@ -14,18 +21,18 @@ export default function FinderClaims() {
 
     const fetchIncomingClaims = async () => {
       try {
-        // ✅ CORRECT LOGIC:
-        // Hum wo claims dhund rahe hain jahan 'finderId' == 'Current User'
-        // Matlab: "Mere items par kis kis ne claim kiya hai?"
-        
         const q = query(
-          collection(db, "claims"), 
-          where("finderId", "==", user.uid) // Sirf Finder ko ye claims dikhenge
+          collection(db, "claims"),
+          where("finderId", "==", user.uid),
+          where("status", "==", "pending")
         );
 
         const snap = await getDocs(q);
-        const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
+        const data = snap.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        }));
+
         setClaims(data);
       } catch (error) {
         console.error("Error fetching claims:", error);
@@ -37,87 +44,109 @@ export default function FinderClaims() {
     fetchIncomingClaims();
   }, [user]);
 
-  // Status Update Function
-  const handleStatus = async (claimId, newStatus) => {
+  // -----------------------------
+  // APPROVE / REJECT (FINAL FIX)
+  // -----------------------------
+  const handleStatus = async (claimId, newStatus, itemId) => {
     try {
-      // Optimistic UI Update
-      setClaims(prev => prev.map(c => 
-        c.id === claimId ? { ...c, status: newStatus } : c
-      ));
+      // 1️⃣ Update claim status
+      await updateDoc(doc(db, "claims", claimId), {
+        status: newStatus,
+      });
 
-      // Firebase Update
-      const claimRef = doc(db, "claims", claimId);
-      await updateDoc(claimRef, { status: newStatus });
-      
+      // 2️⃣ If approved → mark item as resolved
+      if (newStatus === "approved") {
+        // Try both collections safely
+        try {
+          await updateDoc(doc(db, "lostItems", itemId), {
+            isResolved: true,
+          });
+        } catch {}
+
+        try {
+          await updateDoc(doc(db, "foundItems", itemId), {
+            isResolved: true,
+          });
+        } catch {}
+      }
+
+      // 3️⃣ Remove claim from UI
+      setClaims((prev) =>
+        prev.filter((claim) => claim.id !== claimId)
+      );
     } catch (error) {
       console.error("Update failed:", error);
       alert("Failed to update status");
     }
   };
 
-  if (loading) return <div className="loading-text">Loading requests...</div>;
+  if (loading) {
+    return <div className="loading-text">Loading requests...</div>;
+  }
 
   return (
     <div className="finder-claims-container">
       {claims.length === 0 ? (
         <div className="no-claims">
-           <p>No claims received on your items yet.</p>
+          <p>No pending claims on your items.</p>
         </div>
       ) : (
         <div className="claims-list">
           {claims.map((claim) => (
             <div key={claim.id} className="request-card">
-              
               <div className="req-header">
                 <div className="req-info">
-                  <span className="item-label">Item Requested:</span>
-                  <span className="item-name">📦 {claim.itemTitle || "Unknown Item"}</span>
+                  <span className="item-label">
+                    Item Requested:
+                  </span>
+                  <span className="item-name">
+                    📦 {claim.itemTitle || "Unknown Item"}
+                  </span>
                 </div>
                 <span className="req-date">
-                  {claim.createdAt?.toDate ? claim.createdAt.toDate().toLocaleDateString() : "Today"}
+                  {claim.createdAt?.toDate
+                    ? claim.createdAt
+                        .toDate()
+                        .toLocaleDateString()
+                    : "Today"}
                 </span>
               </div>
 
               <div className="req-body">
                 <p className="claim-message">
-                  <strong>Message from Claimer:</strong> <br/>
+                  <strong>Message from Claimer:</strong>
+                  <br />
                   "{claim.message}"
                 </p>
-                
-                <div className="req-status-row">
-                  <span>Current Status:</span>
-                  <span className={`status-pill ${claim.status || "pending"}`}>
-                    {claim.status || "PENDING"}
-                  </span>
-                </div>
               </div>
 
-              {/* ✅ SAFETY CHECK: Buttons sirf tab dikhao jab status Pending ho */}
-              {claim.status === "pending" && (
-                <div className="action-buttons">
-                  <button 
-                    className="btn-approve" 
-                    onClick={() => handleStatus(claim.id, "approved")}
-                  >
-                    ✅ Approve
-                  </button>
-                  <button 
-                    className="btn-reject" 
-                    onClick={() => handleStatus(claim.id, "rejected")}
-                  >
-                    ❌ Reject
-                  </button>
-                </div>
-              )}
-
-              {/* Feedback after decision */}
-              {claim.status === "approved" && (
-                <div className="decision-msg success">You have approved this claim. The item is marked as returned.</div>
-              )}
-              {claim.status === "rejected" && (
-                <div className="decision-msg error">You rejected this claim.</div>
-              )}
-
+              {/* ACTION BUTTONS */}
+              <div className="action-buttons">
+                <button
+                  className="btn-approve"
+                  onClick={() =>
+                    handleStatus(
+                      claim.id,
+                      "approved",
+                      claim.itemId   // 🔥 IMPORTANT
+                    )
+                  }
+                >
+                  ✅ Approve
+                </button>
+                <button
+                  className="btn-reject"
+                  onClick={() =>
+                    handleStatus(
+                      claim.id,
+                      "rejected",
+                      claim.itemId
+                    )
+                  }
+                >
+                  ❌ Reject
+                </button>
+              </div>
             </div>
           ))}
         </div>

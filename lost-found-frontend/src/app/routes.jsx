@@ -4,6 +4,11 @@ import Dashboard from "../pages/dashboard/Dashboard";
 import MyClaims from "../pages/claims/MyClaims";
 import Notifications from "../pages/notifications/Notifications";
 import ProtectedRoute from "./ProtectedRoute";
+import LostItems from "../pages/lost/LostItems";
+import FoundItems from "../pages/found/FoundItems";
+import ItemDetail from "../pages/items/ItemDetail";
+
+
 
 export default function RoutesConfig() {
   return (
@@ -36,6 +41,34 @@ export default function RoutesConfig() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+  path="/lost-items"
+  element={
+    <ProtectedRoute>
+      <LostItems />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/found-items"
+  element={
+    <ProtectedRoute>
+      <FoundItems />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/item/:type/:id"
+  element={
+    <ProtectedRoute>
+      <ItemDetail />
+    </ProtectedRoute>
+  }
+/>
+
     </Routes>
   );
 }
