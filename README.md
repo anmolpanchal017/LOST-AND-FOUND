@@ -90,11 +90,16 @@ src/
 
 👥 Team Members
 Tanmay – Backend & Firebase Logic
+
 Anmol – Frontend UI & User Experience
+
 
 🎯 Future Enhancements
 
 Admin dashboard
+
 AI-based item matching
+
 Email notifications
+
 Campus-specific access control
