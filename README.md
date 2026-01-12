@@ -89,6 +89,7 @@ src/
 
 
 👥 Team Members
+
 Tanmay – Backend & Firebase Logic
 
 Anmol – Frontend UI & User Experience
