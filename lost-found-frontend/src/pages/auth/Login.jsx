@@ -5,111 +5,171 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 export default function Login() {
   const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isSignup, setIsSignup] = useState(false);
 
-  const handleEmailLogin = async (e) => {
+  // -----------------------------
+  // EMAIL LOGIN / SIGNUP
+  // -----------------------------
+  const handleEmailAuth = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
 
     if (!email || !password) {
-      setError("Please fill in all fields.");
-      setLoading(false);
+      toast.error("Please fill all fields");
       return;
     }
 
+    setLoading(true);
+
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate("/dashboard");
+      if (isSignup) {
+        // 🔹 SIGNUP
+        const res = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        await sendEmailVerification(res.user);
+
+        toast.success(
+          "Verification email sent 📩 Please verify before login"
+        );
+
+        setIsSignup(false);
+      } else {
+        // 🔹 LOGIN
+        const res = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        // ❌ BLOCK IF EMAIL NOT VERIFIED
+        if (!res.user.emailVerified) {
+          toast.error("Please verify your email first ❌");
+          return;
+        }
+
+        toast.success("Login successful ✅");
+        navigate("/dashboard");
+      }
     } catch (error) {
-      setError(error.message);
+      toast.error(error.message);
     }
 
     setLoading(false);
   };
 
+  // -----------------------------
+  // GOOGLE LOGIN
+  // -----------------------------
   const handleGoogleLogin = async () => {
     setLoading(true);
-    setError("");
 
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const res = await signInWithPopup(auth, provider);
+
+      // ✅ Google users are already verified
+      toast.success("Login successful ✅");
       navigate("/dashboard");
     } catch (error) {
-      setError(error.message);
+      toast.error(error.message);
     }
 
     setLoading(false);
+  };
+
+  // -----------------------------
+  // PASSWORD RESET
+  // -----------------------------
+  const handleResetPassword = async () => {
+    if (!email) {
+      toast.error("Enter your email first");
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast.success("Password reset email sent 📩");
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   return (
     <div className="login-page">
       <div className="login-card">
-        <h1 className="login-title">Welcome</h1>
-        <p className="login-subtitle">Sign in to your account</p>
+        <h1 className="login-title">
+          {isSignup ? "Create Account" : "Welcome"}
+        </h1>
 
-        {error && <p className="error-message" role="alert">{error}</p>}
+        <p className="login-subtitle">
+          {isSignup
+            ? "Verify email to activate account"
+            : "Sign in to your account"}
+        </p>
 
+        {/* GOOGLE LOGIN */}
         <button
           type="button"
           onClick={handleGoogleLogin}
           disabled={loading}
           className="google-btn"
-          aria-label="Login with Google"
         >
-          <span className="google-icon">G</span> Continue with Google
+          <span className="google-icon">G</span>
+          Continue with Google
         </button>
 
         <div className="divider">
           <span>or</span>
         </div>
 
-        <form onSubmit={handleEmailLogin} className="login-form">
+        {/* EMAIL FORM */}
+        <form onSubmit={handleEmailAuth} className="login-form">
           <div className="input-group">
-            <label htmlFor="email" className="input-label">Email</label>
+            <label className="input-label">Email</label>
             <input
-              id="email"
               type="email"
               placeholder="Enter your email"
               className="input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
-              aria-label="Email"
               disabled={loading}
+              required
             />
           </div>
 
           <div className="input-group">
-            <label htmlFor="password" className="input-label">Password</label>
+            <label className="input-label">Password</label>
             <div className="password-container">
               <input
-                id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 className="input"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
-                aria-label="Password"
                 disabled={loading}
+                required
               />
               <button
                 type="button"
                 className="toggle-password"
                 onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? "🙈" : "👁️"}
               </button>
@@ -120,17 +180,47 @@ export default function Login() {
             type="submit"
             disabled={loading}
             className="login-btn"
-            aria-label="Login"
           >
-            {loading ? <span className="spinner"></span> : "Login"}
+            {loading
+              ? "Please wait..."
+              : isSignup
+              ? "Sign up"
+              : "Login"}
           </button>
         </form>
 
+        {/* FOOTER */}
+        {!isSignup && (
+          <p className="footer-text">
+            Forgot password?{" "}
+            <span className="link" onClick={handleResetPassword}>
+              Reset here
+            </span>
+          </p>
+        )}
+
         <p className="footer-text">
-          Forgot your password? <a href="#" className="link">Reset here</a>
-        </p>
-        <p className="footer-text">
-          Don't have an account? <a href="#" className="link">Sign up</a>
+          {isSignup ? (
+            <>
+              Already have an account?{" "}
+              <span
+                className="link"
+                onClick={() => setIsSignup(false)}
+              >
+                Login
+              </span>
+            </>
+          ) : (
+            <>
+              Don't have an account?{" "}
+              <span
+                className="link"
+                onClick={() => setIsSignup(true)}
+              >
+                Sign up
+              </span>
+            </>
+          )}
         </p>
       </div>
     </div>

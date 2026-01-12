@@ -7,6 +7,10 @@ import ProtectedRoute from "./ProtectedRoute";
 import LostItems from "../pages/lost/LostItems";
 import FoundItems from "../pages/found/FoundItems";
 import ItemDetail from "../pages/items/ItemDetail";
+import AdminProtectedRoute from "./AdminProtectedRoute";
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminLostItems from "../pages/admin/AdminLostItems";
+import AdminFoundItems from "../pages/admin/AdminFoundItems";
 
 
 
@@ -68,6 +72,36 @@ export default function RoutesConfig() {
     </ProtectedRoute>
   }
 />
+
+<Route
+  path="/admin"
+  element={
+    <AdminProtectedRoute>
+      <AdminDashboard />
+    </AdminProtectedRoute>
+  }
+/>
+
+<Route
+  path="/admin/lost-items"
+  element={
+    <AdminProtectedRoute>
+      <AdminLostItems />
+    </AdminProtectedRoute>
+  }
+/>
+
+<Route
+  path="/admin/found-items"
+  element={
+    <AdminProtectedRoute>
+      <AdminFoundItems />
+    </AdminProtectedRoute>
+  }
+/>
+
+
+
 
     </Routes>
   );
