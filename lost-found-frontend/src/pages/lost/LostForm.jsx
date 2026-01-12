@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { db } from "../../firebase/firebaseConfig";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import toast from "react-hot-toast";
 
 export default function LostForm() {
   const { user } = useContext(AuthContext);
@@ -86,7 +87,7 @@ export default function LostForm() {
 
       await addDoc(collection(db, "lostItems"), payload);
 
-      alert("Lost item submitted successfully ✅");
+      toast.success("Found item saved successfully");
 
       // RESET FORM
       setForm(initialState);
@@ -95,7 +96,8 @@ export default function LostForm() {
       document.getElementById("lost-image-input").value = "";
     } catch (err) {
       console.error("SAVE ERROR:", err);
-      alert("Failed to submit lost item ❌");
+      toast.error("Failed to save found item");
+
     }
 
     setLoading(false);

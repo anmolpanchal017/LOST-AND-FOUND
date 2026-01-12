@@ -1,6 +1,17 @@
-/* Container */
+/* CONTAINER */
 .finder-claims-container {
   width: 100%;
+  padding: 10px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* 1. GRID LAYOUT (Sabse Important Change) */
+/* Pehle flex-column tha, ab GRID hai taaki cards side-by-side aayein */
+.claims-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* Responsive Grid */
+  gap: 25px; /* Cards ke beech ka gap */
+  margin-top: 15px;
 }
 
 .loading-text, .no-claims {
@@ -8,60 +19,92 @@
   text-align: center;
   font-style: italic;
   padding: 20px;
+  grid-column: 1 / -1; /* Pure width par dikhega */
 }
 
-/* List Grid */
-.claims-list {
+/* 2. CARD STYLE (Improved) */
+.request-card {
+  background: linear-gradient(145deg, #1f2937, #111827);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
-}
-
-/* THE CARD */
-.request-card {
-  background: rgba(30, 41, 59, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 20px;
-  transition: all 0.3s ease;
+  justify-content: space-between; /* Content ko spread karega */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  min-height: 250px; /* Thoda height diya taaki ek jaise dikhen */
 }
 
 .request-card:hover {
-  background: rgba(30, 41, 59, 0.8);
-  border-color: #38bdf8;
-  transform: translateX(5px);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  border-color: #3b82f6; /* Hover par Blue Border */
 }
 
-/* Header */
+/* HEADER SECTION INSIDE CARD */
 .req-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+  margin-bottom: 15px;
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  padding-bottom: 10px;
-  margin-bottom: 10px;
+  align-items: center;
+}
+
+.req-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.item-label {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .item-name {
   color: #fff;
-  font-weight: 700;
   font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .req-date {
-  color: #64748b;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  white-space: nowrap;
 }
 
-/* Body */
-.req-body p {
-  color: #cbd5e1;
+/* MESSAGE BOX STYLE */
+.req-body {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border-left: 3px solid #3b82f6;
+  flex-grow: 1; /* Message box jagah lega */
+}
+
+.claim-message {
+  color: #d1d5db;
+  font-style: italic;
   font-size: 0.95rem;
   margin-bottom: 10px;
+  line-height: 1.4;
 }
 
-.req-status {
-  font-size: 0.9rem;
-  color: #94a3b8;
+.req-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-top: 8px;
 }
 
 /* STATUS PILLS */
@@ -79,11 +122,11 @@
 .status-pill.approved { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
 .status-pill.rejected { background: rgba(248, 113, 113, 0.2); color: #f87171; }
 
-/* ACTION BUTTONS */
+/* 3. ACTION BUTTONS (Aligned nicely at bottom) */
 .action-buttons {
   display: flex;
-  gap: 10px;
-  margin-top: 15px;
+  gap: 12px;
+  margin-top: auto; /* Push to bottom */
 }
 
 .btn-approve, .btn-reject {
@@ -93,7 +136,11 @@
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .btn-approve {
@@ -102,24 +149,44 @@
 }
 
 .btn-reject {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(239, 68, 68, 0.1);
   border: 1px solid #ef4444;
-  color: #ef4444; /* Red Outline */
+  color: #ef4444;
 }
 
-.btn-approve:hover, .btn-reject:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
-}
+.btn-approve:hover { filter: brightness(1.1); transform: scale(1.02); }
+.btn-reject:hover { background: rgba(239, 68, 68, 0.2); transform: scale(1.02); }
 
-/* Messages after action */
+/* STATUS MESSAGES AFTER ACTION */
 .decision-msg {
-  margin-top: 15px;
-  font-size: 0.9rem;
-  font-weight: 600;
   text-align: center;
-  padding: 8px;
-  border-radius: 6px;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-top: 10px;
 }
-.decision-msg.success { color: #4ade80; background: rgba(74, 222, 128, 0.1); }
-.decision-msg.error { color: #f87171; background: rgba(248, 113, 113, 0.1); }
+.decision-msg.success { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+.decision-msg.error { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+/* Animation Keyframe */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* Update Grid Columns */
+.claims-list {
+  display: grid;
+  /* 350px ko hata kar 260px kiya taaki choti jagah me bhi 2 aa jayein */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+  gap: 20px;
+  width: 100%; /* Ensure ye full width le */
+  margin-top: 15px;
+}
+
+/* Container ki width ko force karein */
+.finder-claims-container {
+  width: 100%;
+  max-width: 100%; /* Parent se chota na ho */
+  padding: 10px;
+  box-sizing: border-box; /* Padding width me count ho */
+}

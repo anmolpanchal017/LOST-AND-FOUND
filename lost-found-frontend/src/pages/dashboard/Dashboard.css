@@ -310,3 +310,23 @@ nav a, nav button, nav h1, nav span {
    Agar upar wala 'order' logic kaam nahi kiya (kyunki HTML structure vary kar sakta hai), 
    to ye neeche wala code try karein jo visual order change kar dega agar wo siblings hain.
 */
+/* EMOJI FIX */
+.wave-emoji {
+  display: inline-block;
+  -webkit-text-fill-color: initial; /* Transparent fill hatayega */
+  color: initial; /* Original color wapis layega */
+  margin-left: 5px;
+  animation: wave 2s infinite; /* Optional: Agar haath hilana ho */
+}
+
+/* Optional Animation */
+@keyframes wave {
+  0% { transform: rotate(0deg); }
+  10% { transform: rotate(14deg); }
+  20% { transform: rotate(-8deg); }
+  30% { transform: rotate(14deg); }
+  40% { transform: rotate(-4deg); }
+  50% { transform: rotate(10deg); }
+  60% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}

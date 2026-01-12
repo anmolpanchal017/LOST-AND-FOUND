@@ -3,6 +3,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { db } from "../../firebase/firebaseConfig";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { sendNotification } from "../../utils/notify";
+import toast from "react-hot-toast";
 
 export default function ClaimForm({ foundItem, onClose }) {
   const { user } = useContext(AuthContext);
@@ -42,11 +43,12 @@ export default function ClaimForm({ foundItem, onClose }) {
         });
       }
 
-      alert("Claim request sent successfully! ✅");
+      toast.success("Found item saved successfully");
       onClose(); // Modal band karo
     } catch (error) {
       console.error("CLAIM ERROR:", error);
-      alert("Failed to send claim. Please try again.");
+      toast.error("Failed to save found item");
+
     } finally {
       setLoading(false);
     }

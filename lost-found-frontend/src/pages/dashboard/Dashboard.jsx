@@ -1,11 +1,11 @@
 import Navbar from "../../components/common/Navbar";
+import Footer from "../../components/common/Footer"; // 👈 IMPORT KAREIN
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import LostForm from "../lost/LostForm";
 import FoundForm from "../found/FoundForm";
-import FoundList from "../found/FoundList";
 import FinderClaims from "../claims/FinderClaims";
-import "./Dashboard.css"; // Import the CSS file
+import "./Dashboard.css"; 
 
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
@@ -13,19 +13,16 @@ export default function Dashboard() {
   return (
     <>
       <Navbar />
-           
+            
       <div className="dashboard-container">
-        {/* HERO HEADER */}
+        
+        {/* HEADER */}
         <header className="dashboard-header">
-          <h1 className="welcome-title">
-            Welcome, {user.displayName}! 👋
-          </h1>
-          <p className="welcome-subtitle">
-            Manage your lost and found items effortlessly.
-          </p>
+          <h1 className="welcome-title">Welcome, {user.displayName}! <span className="wave-emoji">👋</span></h1>
+          <p className="welcome-subtitle">Manage your lost and found items effortlessly.</p>
         </header>
 
-        {/* FORMS SECTION */}
+        {/* FORMS */}
         <section className="forms-section">
           <h2 className="section-title">📝 Quick Actions</h2>
           <div className="forms-grid">
@@ -42,16 +39,19 @@ export default function Dashboard() {
           </div>
         </section>
 
-       
-
-        {/* CLAIMS SECTION */}
+        {/* CLAIMS */}
         <section className="claims-section">
           <h2 className="section-title">📋 Your Claims</h2>
-          <div className="claims-card">
+          <div className="claims-full-width">
             <FinderClaims />
           </div>
         </section>
+
       </div>
+
+      {/* 🔥 FOOTER ADDED HERE (Container ke bahar taaki full width rahe) */}
+      <Footer />
+      
     </>
   );
 }

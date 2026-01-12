@@ -1,0 +1,124 @@
+/* =========================================
+   LOST ITEMS PAGE STYLING
+   ========================================= */
+
+/* 1. Main Page Container */
+.lost-page-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+  animation: fadeIn 0.8s ease-out;
+}
+
+/* 2. Page Title */
+.page-title {
+  color: #f3f4f6;
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 30px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid #374151;
+  padding-bottom: 15px;
+}
+
+/* 3. Loading & Empty States */
+.status-text {
+  color: #9ca3af;
+  text-align: center;
+  font-size: 1.1rem;
+  margin-top: 50px;
+  font-style: italic;
+}
+
+/* 4. THE GRID */
+.lost-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+/* 5. THE CARD (Dark & Glassy) */
+.lost-card {
+  background: linear-gradient(145deg, #1f2937, #111827);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.lost-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  border-color: #ef4444; /* RED BORDER for Lost Items (Change from Blue) */
+}
+
+/* 6. Image Section */
+.card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 1px solid #374151;
+}
+
+/* 7. Content Section */
+.card-content {
+  padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-content h3 {
+  color: #fff;
+  margin: 0 0 10px 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.card-content p {
+  color: #d1d5db;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.card-content strong {
+  color: #f87171; /* Red highlight for Lost items */
+}
+
+.card-date {
+  font-size: 0.8rem;
+  color: #6b7280 !important;
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+/* 8. Claim Button (Blue for "I found this") */
+.claim-btn {
+  margin-top: 15px;
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb); /* Blue Gradient */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.claim-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

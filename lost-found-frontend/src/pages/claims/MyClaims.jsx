@@ -9,6 +9,7 @@ import {
 } from "firebase/firestore";
 import Navbar from "../../components/common/Navbar";
 import "./MyClaims.css";
+import toast from "react-hot-toast";
 
 export default function MyClaims() {
   const { user } = useContext(AuthContext);

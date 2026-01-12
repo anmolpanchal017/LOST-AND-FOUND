@@ -1,18 +1,17 @@
 import { useEffect, useState, useContext } from "react";
 import { db } from "../../firebase/firebaseConfig";
 import {
-  collection,
-  getDocs,
-  addDoc,
-  serverTimestamp,
-  orderBy,
-  query,
+  collection, getDocs, addDoc, serverTimestamp, orderBy, query,
 } from "firebase/firestore";
 import Navbar from "../../components/common/Navbar";
 import { AuthContext } from "../../context/AuthContext";
 import { SearchContext } from "../../context/SearchContext";
 import { searchFilter } from "../../utils/searchFilter";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+
+// ✅ Import CSS File
+import "./FoundItems.css";
 
 export default function FoundItems() {
   const { user } = useContext(AuthContext);
@@ -22,124 +21,115 @@ export default function FoundItems() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // FETCH FOUND ITEMS
+  // FETCH DATA
   useEffect(() => {
     const fetchFoundItems = async () => {
-      const q = query(
-        collection(db, "foundItems"),
-        orderBy("createdAt", "desc")
-      );
-
-      const snap = await getDocs(q);
-      const data = snap.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      const activeItems = data.filter(
-        (item) => item.isResolved !== true
-      );
-
-      setItems(activeItems);
-      setLoading(false);
+      try {
+        const q = query(
+          collection(db, "foundItems"),
+          orderBy("createdAt", "desc")
+        );
+        const snap = await getDocs(q);
+        const data = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        const activeItems = data.filter((item) => item.isResolved !== true);
+        setItems(activeItems);
+      } catch (error) {
+        console.error("Error fetching items:", error);
+        toast.error("Failed to load items");
+      } finally {
+        setLoading(false);
+      }
     };
-
     fetchFoundItems();
   }, []);
 
   const filteredItems = searchFilter(items, searchTerm);
 
-  // CLAIM FOUND ITEM
-  const handleClaim = async (item) => {
-    await addDoc(collection(db, "claims"), {
-      itemId: item.id,
-      itemTitle: item.title,
-      category: item.category,
-      finderId: item.userId,
-      claimedBy: user.uid,
-      message: "This item belongs to me.",
-      status: "pending",
-      createdAt: serverTimestamp(),
-    });
-
-    alert("Claim request sent ✅");
+  // CLAIM HANDLE
+  const handleClaim = async (e, item) => {
+    e.stopPropagation();
+    if (!user) {
+      toast.error("Please login to claim items!");
+      return;
+    }
+    const toastId = toast.loading("Sending claim request...");
+    try {
+      await addDoc(collection(db, "claims"), {
+        itemId: item.id,
+        itemTitle: item.title,
+        category: item.category,
+        finderId: item.userId,
+        claimedBy: user.uid,
+        message: "This item belongs to me.",
+        status: "pending",
+        createdAt: serverTimestamp(),
+      });
+      toast.success("Claim request sent! ✅", { id: toastId });
+    } catch (error) {
+      console.error("Claim Error:", error);
+      toast.error("Failed to send claim", { id: toastId });
+    }
   };
 
   return (
     <>
       <Navbar />
 
-      <div style={{ maxWidth: 600, margin: "auto", padding: 16 }}>
-        <h2>📦 Found Items</h2>
+      {/* Main Container */}
+      <div className="found-page-container">
+        
+        <h2 className="page-title">📦 Found Items</h2>
 
-        {loading && <p>Loading...</p>}
+        {loading && <p className="status-text">Loading items...</p>}
 
         {!loading && filteredItems.length === 0 && (
-          <p>No matching found items.</p>
+          <p className="status-text">No found items match your search.</p>
         )}
 
-        {filteredItems.map((item) => (
-          <div
-            key={item.id}
-            onClick={() => navigate(`/item/found/${item.id}`)}
-            style={{
-              background: "#fff",
-              marginBottom: 24,
-              borderRadius: 10,
-              overflow: "hidden",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-              cursor: "pointer",
-            }}
-          >
-            {item.imageUrl && (
-              <img
-                src={item.imageUrl}
-                alt={item.title}
-                style={{
-                  width: "100%",
-                  height: 280,
-                  objectFit: "cover",
-                }}
-              />
-            )}
-
-            <div style={{ padding: 12 }}>
-              <h3>{item.title}</h3>
-              <p><b>Category:</b> {item.category}</p>
-              <p>{item.description}</p>
-
-              {item.locationText && <p>📍 {item.locationText}</p>}
-              {item.phone && <p>📞 {item.phone}</p>}
-
-              {item.date && (
-                <p style={{ fontSize: 12, color: "#666" }}>
-                  Found on: {item.date}
-                </p>
+        {/* Grid Container */}
+        <div className="found-items-grid">
+          {filteredItems.map((item) => (
+            
+            <div
+              key={item.id}
+              className="found-card"
+              onClick={() => navigate(`/item/found/${item.id}`)}
+            >
+              {/* Image */}
+              {item.imageUrl && (
+                <img
+                  src={item.imageUrl}
+                  alt={item.title}
+                  className="card-image"
+                />
               )}
 
-              {item.userId !== user?.uid && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation(); // 🔥 VERY IMPORTANT
-                    handleClaim(item);
-                  }}
-                  style={{
-                    marginTop: 10,
-                    width: "100%",
-                    padding: 10,
-                    background: "#16a34a",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: 6,
-                    cursor: "pointer",
-                  }}
-                >
-                  Claim This Item
-                </button>
-              )}
+              {/* Content */}
+              <div className="card-content">
+                <h3>{item.title}</h3>
+                <p><strong>Category:</strong> {item.category}</p>
+                <p>{item.description}</p>
+                
+                {item.locationText && <p>📍 {item.locationText}</p>}
+                {item.phone && <p>📞 {item.phone}</p>}
+
+                {item.date && (
+                  <p className="card-date">Found on: {item.date}</p>
+                )}
+
+                {/* Claim Button */}
+                {item.userId !== user?.uid && (
+                  <button
+                    className="claim-btn"
+                    onClick={(e) => handleClaim(e, item)}
+                  >
+                    Claim This Item
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </>
   );

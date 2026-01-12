@@ -10,6 +10,7 @@ import {
 } from "firebase/firestore";
 import { AuthContext } from "../../context/AuthContext";
 import "./FinderClaims.css";
+import toast from "react-hot-toast";
 
 export default function FinderClaims() {
   const { user } = useContext(AuthContext);

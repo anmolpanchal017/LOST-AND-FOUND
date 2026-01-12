@@ -307,3 +307,63 @@
     font-size: 12px;
   }
 }
+/* HEADER BACKGROUND */
+.header {
+  width: 100%;
+  padding: 15px 0; /* Thoda gap diya taaki upar chipke nahi */
+  background: transparent;
+  position: relative;
+  
+  /* ✨ YE ADD KIYA HAI CENTER KARNE KE LIYE ✨ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+/* NAVBAR WRAPPER (Agar aapke JSX me ye hai to isse bhi center rakho) */
+.navbar-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* MAIN NAVBAR PILL */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  /* ✨ SIZE ADJUSTMENT (Center me lane ke liye) ✨ */
+  width: 95%;             /* 100% se hatakar 95% kiya taaki dono taraf gap rahe */
+  max-width: 1200px;      /* Zyada failne se rokega */
+  margin: 0 auto;         /* Ye line usko jabardasti beech me layegi */
+  
+  padding: 10px 50px;     /* Aapka purana padding wesa hi hai */
+  
+  /* ✨ AAPKA PURANA DESIGN (SAME TO SAME) ✨ */
+  background: rgba(17, 17, 17, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: box-shadow 0.3s ease;
+  position: relative;
+}
+
+.navbar:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* --- ISKE NEECHE KA SAARA CODE (Logo, Links, Search, etc.) WESA HI RAKHO --- */
+/* --- DO NOT DELETE YOUR EXISTING CODE BELOW THIS LINE --- */
+
+/* LOGO SECTION */
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+/* ... baaki sara code same rehne do ... */
