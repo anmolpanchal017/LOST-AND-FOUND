@@ -19,8 +19,8 @@ A full-stack Lost & Found web application that helps users report lost or found 
 - Report Found Items with image upload
 - Cloudinary used for image storage
 - Real-time item listing (Firestore onSnapshot)
-<img width="1920" height="1200" alt="Screenshot 2026-01-12 155001" src="https://github.com/user-attachments/assets/96f3e945-b4bc-44a0-b5fa-fa37aea0bac8" />
-<img width="1920" height="1200" alt="Screenshot 2026-01-12 155014" src="https://github.com/user-attachments/assets/66e74718-1e57-4e4e-a23b-7163b8ec5a3f" />
+<img width="1920" height="1200" alt="Screenshot 2026-01-13 170926" src="https://github.com/user-attachments/assets/5186e2e4-9acf-401e-a68e-e45baaf0ece3" />
+
 
 ### 🧾 Claim System
 - Users can claim found items
