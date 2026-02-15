@@ -1,10 +1,10 @@
 /* Footer Container */
 .footer {
-  background-color: #1a1a1a; /* Dark professional background */
+  background-color: #1a1a1a;
   color: #e0e0e0;
   padding: 40px 20px 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin-top: auto; /* Keeps footer at bottom if content is short */
+  margin-top: auto;
 }
 
 .footer-content {
@@ -52,14 +52,13 @@
   display: inline-block;
 }
 
-/* Optional: Underline effect for headers */
 .footer-links h4::after,
 .footer-devs h4::after {
   content: '';
   display: block;
   width: 40px;
   height: 2px;
-  background: #007bff; /* Blue accent color */
+  background: #007bff;
   margin-top: 5px;
 }
 
@@ -80,7 +79,7 @@
 
 .footer-links a:hover {
   color: #fff;
-  padding-left: 5px; /* Subtle movement on hover */
+  padding-left: 5px;
 }
 
 /* Developers Section */
@@ -107,7 +106,7 @@
 }
 
 .dev-badge:hover {
-  background: rgba(0, 123, 255, 0.2); /* Slight blue tint on hover */
+  background: rgba(0, 123, 255, 0.2);
 }
 
 .tech-stack {
@@ -123,7 +122,7 @@
   color: #666;
 }
 
-/* Responsive Design for Mobile */
+/* Responsive Design */
 @media (max-width: 768px) {
   .footer-content {
     flex-direction: column;
@@ -132,7 +131,7 @@
   
   .footer-links h4::after,
   .footer-devs h4::after {
-    margin: 5px auto; /* Center the underline on mobile */
+    margin: 5px auto;
   }
 
   .dev-names {
