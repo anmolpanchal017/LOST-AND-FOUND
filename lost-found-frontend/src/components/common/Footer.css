@@ -1,10 +1,11 @@
-/* Footer Container */
+/* Footer Container - Dark Navy Background to match App Theme */
 .footer {
-  background-color: #1a1a1a;
-  color: #e0e0e0;
+  background-color: #0b1120; /* Deep Navy Blue (matches your dashboard vibe) */
+  color: #cbd5e1; /* Slate text (better than plain gray) */
   padding: 40px 20px 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   margin-top: auto;
+  border-top: 1px solid #1e293b; /* Subtle border to separate from body */
 }
 
 .footer-content {
@@ -14,7 +15,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 30px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #1e293b; /* Matches the top border */
   padding-bottom: 30px;
 }
 
@@ -26,15 +27,16 @@
 
 .footer-logo {
   font-size: 1.8rem;
-  color: #fff;
+  color: #fff; /* Bright White */
   margin-bottom: 10px;
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
 .footer-tagline {
-  color: #a0a0a0;
+  color: #94a3b8; /* Slate-400 for subtitle */
   font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 /* Links Section */
@@ -45,21 +47,24 @@
 
 .footer-links h4,
 .footer-devs h4 {
-  color: #fff;
+  color: #f8fafc; /* Almost white */
   font-size: 1.1rem;
   margin-bottom: 15px;
+  font-weight: 600;
   position: relative;
   display: inline-block;
 }
 
+/* Underline effect - changed to a soft blue */
 .footer-links h4::after,
 .footer-devs h4::after {
   content: '';
   display: block;
   width: 40px;
-  height: 2px;
-  background: #007bff;
-  margin-top: 5px;
+  height: 3px;
+  background: #3b82f6; /* Modern Blue Accent */
+  border-radius: 2px;
+  margin-top: 6px;
 }
 
 .footer-links ul {
@@ -68,18 +73,19 @@
 }
 
 .footer-links li {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .footer-links a {
-  color: #b0b0b0;
+  color: #94a3b8;
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  display: inline-block;
 }
 
 .footer-links a:hover {
-  color: #fff;
-  padding-left: 5px;
+  color: #60a5fa; /* Light Blue on hover */
+  transform: translateX(5px);
 }
 
 /* Developers Section */
@@ -91,35 +97,50 @@
 .dev-names {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
   font-weight: 500;
 }
 
+/* Ye wala part Badge ko professional banayega */
 .dev-badge {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  transition: background 0.3s;
+  color: #e2e8f0;
+  background: rgba(30, 41, 59, 0.5); /* Semi-transparent Slate */
+  border: 1px solid #334155; /* Subtle border */
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  cursor: default;
 }
 
 .dev-badge:hover {
-  background: rgba(0, 123, 255, 0.2);
+  background: rgba(59, 130, 246, 0.15); /* Blue glow on hover */
+  border-color: #3b82f6;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.dev-separator {
+  color: #64748b;
+  font-size: 0.9rem;
 }
 
 .tech-stack {
   font-size: 0.85rem;
-  color: #888;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 /* Bottom Copyright Bar */
 .footer-bottom {
   text-align: center;
-  padding-top: 20px;
+  padding-top: 25px;
   font-size: 0.85rem;
-  color: #666;
+  color: #64748b;
 }
 
 /* Responsive Design */
@@ -131,10 +152,14 @@
   
   .footer-links h4::after,
   .footer-devs h4::after {
-    margin: 5px auto;
+    margin: 6px auto;
   }
 
   .dev-names {
+    justify-content: center;
+  }
+  
+  .tech-stack {
     justify-content: center;
   }
 }
