@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  lost-found-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    # Map the container's dev port (5173) to host machine (5173)
+    ports:
+      - "5173:5173"
+    
+    # Mount volumes to support hot-reloading (sync code between host and container)
+    volumes:
+      - .:/app
+      - /app/node_modules
+    
+    # Explicitly load environment variables from the .env file
+    env_file:
+      - .env
+    
+    # Keep the process interactive for development
+    stdin_open: true
+    # tty: true
+
+    # For development, you can restart on crash or failure
+    # restart: unless-stopped

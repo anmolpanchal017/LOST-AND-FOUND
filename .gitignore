@@ -1,0 +1,12 @@
+# Project Root Git Ignore
+lost-found-frontend/node_modules/
+lost-found-frontend/dist/
+lost-found-frontend/.env
+lost-found-frontend/.firebase/
+lost-found-frontend/.vercel/
+
+# Generic
+node_modules/
+.env
+.DS_Store
+*.log

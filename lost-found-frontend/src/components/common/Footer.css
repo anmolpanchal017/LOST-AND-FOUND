@@ -1,165 +1,79 @@
-/* Footer Container - Dark Navy Background to match App Theme */
 .footer {
-  background-color: #0b1120; /* Deep Navy Blue (matches your dashboard vibe) */
-  color: #cbd5e1; /* Slate text (better than plain gray) */
-  padding: 40px 20px 20px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  margin-top: auto;
-  border-top: 1px solid #1e293b; /* Subtle border to separate from body */
+  width: 100%;
+  background: linear-gradient(135deg, #111827, #1f2937);
+  border-top: 1px solid #374151;
+  margin-top: 60px;
 }
 
-.footer-content {
+.footer-container {
   max-width: 1200px;
   margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 30px;
-  border-bottom: 1px solid #1e293b; /* Matches the top border */
-  padding-bottom: 30px;
+  padding: 30px 20px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  align-items: center;
 }
 
-/* Brand Section */
-.footer-brand {
-  flex: 1;
-  min-width: 250px;
+/* LEFT */
+.footer-left h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #ffffff;
 }
 
-.footer-logo {
-  font-size: 1.8rem;
-  color: #fff; /* Bright White */
-  margin-bottom: 10px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.footer-tagline {
-  color: #94a3b8; /* Slate-400 for subtitle */
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-
-/* Links Section */
-.footer-links {
-  flex: 1;
-  min-width: 200px;
-}
-
-.footer-links h4,
-.footer-devs h4 {
-  color: #f8fafc; /* Almost white */
-  font-size: 1.1rem;
-  margin-bottom: 15px;
-  font-weight: 600;
-  position: relative;
-  display: inline-block;
-}
-
-/* Underline effect - changed to a soft blue */
-.footer-links h4::after,
-.footer-devs h4::after {
-  content: '';
-  display: block;
-  width: 40px;
-  height: 3px;
-  background: #3b82f6; /* Modern Blue Accent */
-  border-radius: 2px;
+.footer-left p {
   margin-top: 6px;
-}
-
-.footer-links ul {
-  list-style: none;
-  padding: 0;
-}
-
-.footer-links li {
-  margin-bottom: 10px;
-}
-
-.footer-links a {
-  color: #94a3b8;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  display: inline-block;
-}
-
-.footer-links a:hover {
-  color: #60a5fa; /* Light Blue on hover */
-  transform: translateX(5px);
-}
-
-/* Developers Section */
-.footer-devs {
-  flex: 1;
-  min-width: 250px;
-}
-
-.dev-names {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 12px;
-  font-weight: 500;
-}
-
-/* Ye wala part Badge ko professional banayega */
-.dev-badge {
-  color: #e2e8f0;
-  background: rgba(30, 41, 59, 0.5); /* Semi-transparent Slate */
-  border: 1px solid #334155; /* Subtle border */
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  transition: all 0.3s ease;
-  cursor: default;
-}
-
-.dev-badge:hover {
-  background: rgba(59, 130, 246, 0.15); /* Blue glow on hover */
-  border-color: #3b82f6;
-  color: #fff;
-  transform: translateY(-2px);
-}
-
-.dev-separator {
-  color: #64748b;
   font-size: 0.9rem;
+  color: #9ca3af;
 }
 
-.tech-stack {
-  font-size: 0.85rem;
-  color: #64748b;
+/* CENTER */
+.footer-center {
   display: flex;
-  align-items: center;
-  gap: 5px;
+  justify-content: center;
+  gap: 20px;
 }
 
-/* Bottom Copyright Bar */
-.footer-bottom {
-  text-align: center;
-  padding-top: 25px;
+.footer-center a {
+  color: #d1d5db;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-center a:hover {
+  color: #3b82f6;
+}
+
+/* RIGHT */
+.footer-right {
+  text-align: right;
+}
+
+.footer-right p {
+  margin: 0;
   font-size: 0.85rem;
-  color: #64748b;
+  color: #9ca3af;
 }
 
-/* Responsive Design */
+.footer-right span {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* MOBILE */
 @media (max-width: 768px) {
-  .footer-content {
-    flex-direction: column;
+  .footer-container {
+    grid-template-columns: 1fr;
     text-align: center;
   }
-  
-  .footer-links h4::after,
-  .footer-devs h4::after {
-    margin: 6px auto;
+
+  .footer-center {
+    justify-content: center;
   }
 
-  .dev-names {
-    justify-content: center;
-  }
-  
-  .tech-stack {
-    justify-content: center;
+  .footer-right {
+    text-align: center;
   }
 }

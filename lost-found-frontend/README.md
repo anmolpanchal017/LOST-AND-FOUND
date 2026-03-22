@@ -1,16 +1,85 @@
-# React + Vite
+# 🔍 Lost & Found Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack, premium Lost & Found web application designed for campus communities. It allows users to report lost or found items, manage claims, and receive real-time updates—all with a stunning, modern user interface.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🔥 Key Features
 
-## React Compiler
+- **🔐 Secure Authentication**: Integrated with Firebase Auth (Email/Password & Google Sign-In).
+- **🎨 Premium UI/UX**: Redesigned from the ground up with **Tailwind CSS 4.0**, featuring glassmorphism, modern typography (Outfit & Inter), and full responsiveness.
+- **⚡ Real-time Updates**: Instant listing of items and notifications using Firestore's live synchronization.
+- **📦 Comprehensive Reporting**: 
+  - Detailed reporting for both Lost and Found items.
+  - Image upload support (via Cloudinary/Firebase).
+- **📋 Claim Management System**:
+  - Found items can be claimed by owners.
+  - Finders can review, approve, or reject incoming claims.
+  - Real-time status tracking for all claim activities.
+- **🔔 Notification Feed**: Stay informed about claim requests and status changes.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠 Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Frontend
+- **React 19+** (Vite Hub)
+- **Tailwind CSS 4.0** (Newest Engine)
+- **Lucide React** (Consistent Iconography)
+- **React Router 7+** (Advanced Navigation)
+- **React Hot Toast** (Polished Feedback)
+
+### Backend / Infrastructure
+- **Firebase Authentication**
+- **Cloud Firestore** (Real-time NoSQL Database)
+- **Firebase Hosting** (Optionally configured)
+- **Docker-ready** (Standardized Development)
+
+---
+
+## 🐳 Docker Setup
+
+The project is fully containerized for a smooth development experience across different team environments.
+
+1.  **Ensure you have Docker & Docker Compose installed.**
+2.  **Create your `.env` file** (see `.env.example`).
+3.  **Spin up the development environment:**
+    ```bash
+    docker compose up --build
+    ```
+4.  **Access the application:**
+    Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+> [!TIP]
+> Changes made to the code locally will automatically reflect inside the Docker container thanks to volume mapping.
+
+---
+
+## 📦 Local Installation (Non-Docker)
+
+1. **Clone & Install:**
+   ```bash
+   git clone <repository-url>
+   cd lost-found-frontend
+   npm install
+   ```
+2. **Setup Environment Variables:**
+   Copy `.env.example` to `.env` and fill in your Firebase credentials.
+3. **Run Dev Server:**
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 👥 Contributors
+
+- **Tanmay** – Backend & Firebase Logic
+- **Anmol** – Frontend UI & User Experience
+- **Antigravity AI** – Tailwind 4.0 Redesign & Modern Architecture
+
+---
+
+## 📄 License & Standards
+
+This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). Please respect our [Architecture Guidelines](ARCHITECTURE.md) during development.
