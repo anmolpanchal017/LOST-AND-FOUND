@@ -76,7 +76,6 @@ The project is fully containerized for a smooth development experience across di
 
 - **Tanmay** – Backend & Firebase Logic
 - **Anmol** – Frontend UI & User Experience
-- **Antigravity AI** – Tailwind 4.0 Redesign & Modern Architecture
 
 ---
 
